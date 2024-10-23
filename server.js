@@ -17,13 +17,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.use("/api",userRoute);
 app.use("/",authRoute);
 
-app.use(cors());
-
-// OR, to allow a specific frontend origin:
 app.use(cors({
-  origin: 'https://auth-1-kwq4.onrender.com'  // Replace with your actual frontend domain
-}));
-
+    origin: 'http://localhost:3000', // Allow localhost:3000
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+  }));
 app.get("/test",async(req,res)=>{
     return res.render('home')
 })
