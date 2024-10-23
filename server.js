@@ -61,7 +61,7 @@ const corsOptions = {
   origin: 'http://localhost:3000',  // Allow requests only from your frontend
   methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed HTTP methods
   allowedHeaders: ['Content-Type', 'Authorization'],  // Allowed headers
-  credentials: true,  // Allow sending cookies or authorization headers
+  credentials: true,  
 };
 
 app.use(cors(corsOptions));  
