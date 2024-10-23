@@ -19,9 +19,14 @@ app.use("/",authRoute);
 
 
 app.use(cors({
-    origin: 'http://localhost:3000'
+    origin: 'http://localhost:3000',  // Frontend running on localhost
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],  // Allowed methods
+    allowedHeaders: ['Content-Type', 'Authorization'],  // Allowed headers
+    credentials: true  // Allow credentials (cookies, authorization headers, etc.)
   }));
-
+  
+  // Handle preflight requests (OPTIONS method)
+  app.options('*', cors()); 
 
 app.listen(PORT,()=>console.log(`Server started at PORT ${PORT}`));
 
