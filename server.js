@@ -88,20 +88,14 @@
 require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const mongoose = require('mongoose');
 const path = require('path');
 
 const app = express();
 const PORT = 3008;
+const connectDB = require("./connectDb/mongConnect")
 
-// MongoDB connection
-const mongoURI = "mongodb+srv://patelrajeev10342:IjF9uRRJJJkisQzZ@authcluster.apnpr.mongodb.net/?retryWrites=true&w=majority&appName=authCluster"
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('MongoDB connected successfully'))
-.catch(err => console.error('MongoDB connection error:', err));
+connectDB()
+
 
 // CORS configuration
 const corsOptions = {
@@ -115,9 +109,7 @@ const corsOptions = {
 app.use(cors(corsOptions));  // Apply CORS middleware
 app.use(express.json());  // JSON Parsing middleware
 
-// Set view engine
-app.set('view engine', 'ejs');
-app.set('views', path.resolve('./views'));
+
 
 // Routes
 const userRoute = require("./routes/userRoute");
