@@ -17,10 +17,9 @@ app.set('views', path.join(__dirname, 'views'));
 app.use("/api",userRoute);
 app.use("/",authRoute);
 
+
 app.use(cors({
-    origin: 'http://localhost:3000', // Allow localhost:3000
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
+    origin: 'http://localhost:3000'
   }));
 
 
