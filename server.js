@@ -44,6 +44,9 @@
 
 
 const express = require("express");
+const mongoose = require('mongoose')
+mongoose.connect('mongodb://127.0.0.1:27017/restful-auth-apis')
+mongoose.connect('mongodb+srv://patelrajeev10342:IjF9uRRJJJkisQzZ@authcluster.apnpr.mongodb.net/?retryWrites=true&w=majority&appName=authCluster')
 const cors = require("cors");
 const path = require("path");
 require("dotenv").config();
