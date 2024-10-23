@@ -64,12 +64,11 @@ const corsOptions = {
   credentials: true,  // Allow sending cookies or authorization headers
 };
 
-app.use(cors(corsOptions));  // Apply CORS middleware
+app.use(cors(corsOptions));  
 
 // JSON Parsing middleware
 app.use(express.json());
 
-// Routes (make sure CORS is applied before these)
 app.use("/api", userRoute);
 app.use("/", authRoute);
 
