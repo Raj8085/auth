@@ -26,7 +26,17 @@ app.use(cors({
   }));
   
   // Handle preflight requests (OPTIONS method)
-  app.options('*', cors()); 
+//   app.options('*', cors()); 
+
+app.options('*', (req, res) => {
+    console.log('Preflight request received:', req.headers);
+    res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+    res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');
+    res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+    res.sendStatus(200);
+  });
+  
+
 
 app.listen(PORT,()=>console.log(`Server started at PORT ${PORT}`));
 
