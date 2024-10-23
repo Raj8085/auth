@@ -58,7 +58,7 @@ const userRegister = async (req, res) => {
 
 const loginUser = async (req, res) => {
   try {
-    const { email, password, resendOtp } = req.body; // Include resendOtp in the request body
+    const { email, password, resendOtp } = req.body; 
 
     if (!email || (!password && !resendOtp)) {
       return res.status(400).json({
