@@ -22,9 +22,7 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
     allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
   }));
-app.get("/test",async(req,res)=>{
-    return res.render('home')
-})
+
 
 app.listen(PORT,()=>console.log(`Server started at PORT ${PORT}`));
 
