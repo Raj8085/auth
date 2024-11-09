@@ -34,7 +34,7 @@ exports.registerValidator = [
   check('email', 'Please include a valid email').isEmail().normalizeEmail({
     gmail_remove_dots: true,
   }),
-  check('phoneNumber', 'It should contain 10 digits').isLength({ min: 10, max: 10 }),
+  // check('phoneNumber', 'It should contain 10 digits').isLength({ min: 10, max: 10 }),
   check('password', 'It should contain more than 6 characters, one uppercase, lowercase, number, and special character').isStrongPassword({
     minLength: 6,
     minUppercase: 1,
