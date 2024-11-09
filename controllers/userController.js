@@ -6,10 +6,10 @@ const mailer = require('../helpers/mailer');
 const otpGenerator = require('otp-generator');
 const twilio = require('twilio'); 
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;
-const authToken = process.env.TWILIO_AUTH_TOKEN;
+// const accountSid = process.env.TWILIO_ACCOUNT_SID;
+// const authToken = process.env.TWILIO_AUTH_TOKEN;
 
-const twilioClient = new twilio(accountSid, authToken);
+// const twilioClient = new twilio(accountSid, authToken);
 // const sendOtp = async (req, res) => {
 //   try {
 //     const {phoneNumber} = req.body;
@@ -40,6 +40,13 @@ const twilioClient = new twilio(accountSid, authToken);
 // }
 
 const userRegister = async (req, res) => {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+const twilioClient = new twilio(accountSid, authToken);
+
+console.log(twilioClient,"twilioCLIENT")
+
   try {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
