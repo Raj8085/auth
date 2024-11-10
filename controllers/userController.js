@@ -6,12 +6,12 @@ const mailer = require('../helpers/mailer');
 const otpGenerator = require('otp-generator');
 const twilio = require('twilio'); 
 
-const accountSid = process.env.TWILIO_ACCOUNT_SID;  
+const accountSid = process.env.TWILIO_ACCOUNT_SID;
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 const twilioClient = new twilio(accountSid, authToken);
 
-//function to generate the current date and time plus 15 seconds for otp expiration
+console.log(twilioClient,"twilio client");
 
 const generateExpiryTime=()=>{
   const currentTime = new Date()
@@ -22,12 +22,12 @@ const sendOtp = async (req, res) => {
   try {
     const {phoneNumber} = req.body;
     const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-    const cDate = new Date();
+    // const cDate = new Date();
     
     const otpExpire = generateExpiryTime();
     
     await OtpModel.findOneAndUpdate({ phoneNumber },
-      {otpExpire,otp : new Date(cDate.getTime())},
+      {otp,otpExpire},
       {upsert : true, new : true, setDefaultsOnInsert : true}
     )
 
