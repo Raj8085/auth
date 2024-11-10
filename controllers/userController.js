@@ -6,46 +6,50 @@ const mailer = require('../helpers/mailer');
 const otpGenerator = require('otp-generator');
 const twilio = require('twilio'); 
 
-// const accountSid = process.env.TWILIO_ACCOUNT_SID;
-// const authToken = process.env.TWILIO_AUTH_TOKEN;
-
-// const twilioClient = new twilio(accountSid, authToken);
-// const sendOtp = async (req, res) => {
-//   try {
-//     const {phoneNumber} = req.body;
-//     const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-//     const cDate = new Date();
-    
-//     await OtpModel.findOneAndUpdate({ phoneNumber },
-//       {otp,otpExpiration : new Date(cDate.getTime())},
-//       {upsert : true, new : true, setDefaultsOnInsert : true}
-//     )
-
-//     await twilioClient.messages.create({
-//       body : `Your otp is ${otp}`,
-//       to : phoneNumber,
-//       from : process.env.TWILIO_PHONE_NUMBER
-//     })
-
-//     return res.status(200).json({
-//       success : true,
-//       msg : 'otp sent successfully!'
-//     })
-//   } catch (error) {
-//     return res.status(400).json({
-//       success : false,
-//       msg : error.message
-//     })
-//   }
-// }
-
-const userRegister = async (req, res) => {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+const accountSid = process.env.TWILIO_ACCOUNT_SID;  
 const authToken = process.env.TWILIO_AUTH_TOKEN;
 
 const twilioClient = new twilio(accountSid, authToken);
 
-console.log(twilioClient,"twilioCLIENT")
+//function to generate the current date and time plus 15 seconds for otp expiration
+
+const generateExpiryTime=()=>{
+  const currentTime = new Date()
+  return new Date(currentTime.getTime() + 15 * 1000)
+} 
+
+const sendOtp = async (req, res) => {
+  try {
+    const {phoneNumber} = req.body;
+    const otp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
+    const cDate = new Date();
+    
+    const otpExpire = generateExpiryTime();
+    
+    await OtpModel.findOneAndUpdate({ phoneNumber },
+      {otpExpire,otp : new Date(cDate.getTime())},
+      {upsert : true, new : true, setDefaultsOnInsert : true}
+    )
+
+    await twilioClient.messages.create({
+      body : `Your otp is ${otp}`,
+      to : phoneNumber,
+      from : process.env.TWILIO_PHONE_NUMBER
+    })
+
+    return res.status(200).json({
+      success : true,
+      msg : 'otp sent successfully!'
+    })
+  } catch (error) {
+    return res.status(400).json({
+      success : false,
+      msg : error.message
+    })
+  }
+}
+
+const userRegister = async (req, res) => {
 
   try {
     const errors = validationResult(req);
@@ -71,6 +75,7 @@ console.log(twilioClient,"twilioCLIENT")
 
     var otp = Math.floor(100000 + Math.random()*900000)
 
+    const otpExpiration = generateExpiryTime();
 
     const user = new User({
       firstName,
@@ -79,6 +84,7 @@ console.log(twilioClient,"twilioCLIENT")
       phoneNumber,
       password: hashPassword,
       sendOtp: otp.toString(),
+      otpExpiration
     });
     const userData = await user.save();
     console.log(userData._id)
@@ -86,28 +92,11 @@ console.log(twilioClient,"twilioCLIENT")
     
     mailer.sendMail(email,'Mail verification',msg);
 
-    // const {phoneNumber} = req.body;
-    const mobileOtp = otpGenerator.generate(6, { lowerCaseAlphabets: false, upperCaseAlphabets: false, specialChars: false });
-    const cDate = new Date();
-    
-    await OtpModel.findOneAndUpdate({ phoneNumber },
-      {mobileOtp,otpExpiration : new Date(cDate.getTime())},
-      {upsert : true, new : true, setDefaultsOnInsert : true}
-    )
-
-    await twilioClient.messages.create({
-      body : `Your otp is ${mobileOtp}`,
-      to : phoneNumber,
-      from : process.env.TWILIO_PHONE_NUMBER
-    })
- 
-
     return res.status(200).json({
       success: true,
       msg: 'Registered Successfully',
       user: userData,
     });
-+9
   } catch (error) {
     return res.status(400).json({
       success: false,
@@ -115,7 +104,6 @@ console.log(twilioClient,"twilioCLIENT")
     });
   }
 };
-
 
 const loginUser = async (req, res) => {
   try {
@@ -184,9 +172,6 @@ const loginUser = async (req, res) => {
     });
   } 
 };
- 
-
- 
 
 const verifyOtp = async (req, res) => {
   const { email, password,otp } = req.body;
@@ -208,8 +193,17 @@ const verifyOtp = async (req, res) => {
       });
     }
 
+    //check if otp has expired
+    if(new Date() > user.otpExpiration){
+      return res.status(400).json({
+        success : false,
+        msg : 'otp has expired'
+      });
+    }
+
+
     if (user.sendOtp === otp) {
-      await User.findByIdAndUpdate(user._id, { sendOtp: null });
+      await User.findByIdAndUpdate(user._id, { sendOtp: null, otpExpiration : null });
 
       //Generate jwt token
       const token = jwt.sign({id: user._id,email:user.email}, process.env.JWT_SECRET, 
@@ -236,9 +230,13 @@ const verifyOtp = async (req, res) => {
   }
 };
 
+// const forgetPassword=async()=>{
+
+// }
+
 module.exports = {
   userRegister,
   verifyOtp,
   loginUser,
- 
+  sendOtp
 };
